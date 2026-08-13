@@ -248,25 +248,6 @@ def single_prediction_page():
 
     st.title("🧠 Stroke Prediction System")
 
-    st.caption(
-        "Enter the patient's demographic and clinical "
-        "information to generate a stroke prediction."
-    )
-
-    st.divider()
-
-
-    # ======================================
-    # INFORMATION
-    # ======================================
-
-    st.info(
-        "Complete all patient information below. "
-        "All fields are required before a prediction "
-        "can be generated.",
-        icon="ℹ️"
-    )
-
 
     # ======================================
     # PATIENT FORM
