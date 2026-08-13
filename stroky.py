@@ -1,5 +1,6 @@
 # ==========================================
-# STROKE PREDICTION SYSTEM - STREAMLIT APP
+# STROKE PREDICTION SYSTEM
+# STREAMLIT APPLICATION
 # ==========================================
 
 import numpy as np
@@ -23,347 +24,16 @@ st.set_page_config(
 
 
 # ==========================================
-# CUSTOM CSS
-# ==========================================
-
-st.markdown(
-    """
-    <style>
-
-    /* Overall page */
-    .stApp {
-        background-color: #f5f8fb;
-    }
-
-    /* Main content width */
-    .block-container {
-        padding-top: 2rem;
-        padding-bottom: 3rem;
-        max-width: 1000px;
-    }
-
-    /* Hide Streamlit default menu/footer */
-    #MainMenu {
-        visibility: hidden;
-    }
-
-    footer {
-        visibility: hidden;
-    }
-
-
-    /* ===============================
-       HEADER
-    =============================== */
-
-    .main-header {
-        background: linear-gradient(
-            135deg,
-            #0f766e,
-            #0d9488
-        );
-
-        padding: 28px 30px;
-        border-radius: 18px;
-        margin-bottom: 25px;
-        color: white;
-
-        box-shadow:
-            0 8px 24px rgba(0,0,0,0.08);
-    }
-
-    .main-header h1 {
-        margin: 0;
-        font-size: 30px;
-        font-weight: 700;
-    }
-
-    .main-header p {
-        margin-top: 8px;
-        margin-bottom: 0;
-        font-size: 15px;
-        opacity: 0.92;
-    }
-
-
-    /* ===============================
-       SECTION HEADER
-    =============================== */
-
-    .section-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: #17324d;
-        margin-top: 5px;
-        margin-bottom: 4px;
-    }
-
-    .section-description {
-        color: #64748b;
-        font-size: 14px;
-        margin-bottom: 20px;
-    }
-
-
-    /* ===============================
-       INFORMATION BOX
-    =============================== */
-
-    .info-box {
-        background-color: #eaf6f5;
-        border-left: 4px solid #0d9488;
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin-bottom: 22px;
-        color: #334155;
-        font-size: 14px;
-    }
-
-
-    /* ===============================
-       RESULT CARDS
-    =============================== */
-
-    .result-positive {
-        background-color: #fff4f4;
-        border: 1px solid #fecaca;
-        border-left: 5px solid #dc2626;
-        padding: 22px;
-        border-radius: 14px;
-        margin-top: 20px;
-    }
-
-    .result-positive h3 {
-        color: #b91c1c;
-        margin: 0 0 5px 0;
-    }
-
-    .result-positive p {
-        color: #7f1d1d;
-        margin: 0;
-    }
-
-
-    .result-negative {
-        background-color: #f0fdf4;
-        border: 1px solid #bbf7d0;
-        border-left: 5px solid #16a34a;
-        padding: 22px;
-        border-radius: 14px;
-        margin-top: 20px;
-    }
-
-    .result-negative h3 {
-        color: #15803d;
-        margin: 0 0 5px 0;
-    }
-
-    .result-negative p {
-        color: #166534;
-        margin: 0;
-    }
-
-
-    /* ===============================
-       MEDICAL DISCLAIMER
-    =============================== */
-
-    .disclaimer {
-        margin-top: 15px;
-        background-color: #fff7ed;
-        border: 1px solid #fed7aa;
-        border-radius: 10px;
-        padding: 12px 16px;
-        color: #9a3412;
-        font-size: 13px;
-    }
-
-
-    /* ===============================
-       BUTTON
-    =============================== */
-
-    div.stButton > button {
-        width: 100%;
-        background-color: #0d9488;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 12px;
-        height: 48px;
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    div.stButton > button:hover {
-        background-color: #0f766e;
-        color: white;
-        border: none;
-    }
-
-
-    /* Form button */
-
-    div[data-testid="stFormSubmitButton"] button {
-        width: 100%;
-        background-color: #0d9488;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        height: 48px;
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    div[data-testid="stFormSubmitButton"] button:hover {
-        background-color: #0f766e;
-        color: white;
-    }
-
-
-    /* ===============================
-       INPUTS
-    =============================== */
-
-    div[data-baseweb="select"] > div {
-        border-radius: 10px;
-    }
-
-    div[data-testid="stNumberInput"] input {
-        border-radius: 10px;
-    }
-
-
-    /* ===============================
-       SIDEBAR
-    =============================== */
-
-    section[data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 1px solid #e2e8f0;
-    }
-
-
-    /* ===============================
-       UPLOAD BOX
-    =============================== */
-
-    div[data-testid="stFileUploader"] {
-        background-color: white;
-        padding: 16px;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-    }
-
-
-    /* ===============================
-       TABLE
-    =============================== */
-
-    div[data-testid="stDataFrame"] {
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ==========================================
-# SIDEBAR
-# ==========================================
-
-with st.sidebar:
-
-    st.markdown(
-        """
-        <div style="
-            padding:15px 5px 20px 5px;
-        ">
-            <h2 style="
-                color:#0f766e;
-                margin-bottom:2px;
-            ">
-                🧠 StrokeDetect
-            </h2>
-
-            <p style="
-                color:#64748b;
-                font-size:13px;
-                margin-top:0;
-            ">
-                Machine Learning Prediction System
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-    selection = option_menu(
-        menu_title=None,
-
-        options=[
-            "Single Prediction",
-            "Multi Prediction"
-        ],
-
-        icons=[
-            "person",
-            "file-earmark-spreadsheet"
-        ],
-
-        default_index=0,
-
-        styles={
-
-            "container": {
-                "padding": "0!important",
-                "background-color": "#ffffff"
-            },
-
-            "icon": {
-                "color": "#0d9488",
-                "font-size": "18px"
-            },
-
-            "nav-link": {
-                "font-size": "15px",
-                "text-align": "left",
-                "margin": "5px 0",
-                "padding": "11px 13px",
-                "border-radius": "9px",
-                "--hover-color": "#eaf6f5"
-            },
-
-            "nav-link-selected": {
-                "background-color": "#0d9488",
-                "color": "white"
-            }
-        }
-    )
-
-
-    st.markdown("---")
-
-    st.caption(
-        "Stroke prediction using machine learning."
-    )
-
-
-# ==========================================
 # MODEL FILES
 # ==========================================
 
 MODEL_FILE = "strokedetect.sav"
-
 SCALER_FILE = "my_standard_scaler.pkl"
 
 
 # ==========================================
 # FEATURE ORDER
+# Must match model training
 # ==========================================
 
 FEATURE_COLUMNS = [
@@ -438,11 +108,7 @@ SMOKING_MAP = {
 @st.cache_resource
 def load_model():
 
-    with open(
-        MODEL_FILE,
-        "rb"
-    ) as file:
-
+    with open(MODEL_FILE, "rb") as file:
         model = pk.load(file)
 
     return model
@@ -455,11 +121,7 @@ def load_model():
 @st.cache_resource
 def load_scaler():
 
-    with open(
-        SCALER_FILE,
-        "rb"
-    ) as file:
-
+    with open(SCALER_FILE, "rb") as file:
         scaler = pk.load(file)
 
     return scaler
@@ -471,9 +133,7 @@ def load_scaler():
 
 def filedownload(df):
 
-    csv = df.to_csv(
-        index=False
-    )
+    csv = df.to_csv(index=False)
 
     b64 = base64.b64encode(
         csv.encode()
@@ -490,68 +150,90 @@ def filedownload(df):
 
 
 # ==========================================
-# SINGLE PREDICTION FUNCTION
+# STROKE PREDICTION FUNCTION
 # ==========================================
 
 def stroke_detect(given_data):
 
     model = load_model()
-
     scaler = load_scaler()
 
-
+    # Convert patient data to NumPy array
     input_data = np.asarray(
         given_data,
         dtype=float
     )
 
-
-    input_data_reshaped = (
-        input_data.reshape(
-            1,
-            -1
-        )
+    # Reshape for one patient
+    input_data = input_data.reshape(
+        1,
+        -1
     )
 
-
-    if (
-        input_data_reshaped.shape[1]
-        != 10
-    ):
+    # Ensure correct number of features
+    if input_data.shape[1] != 10:
 
         raise ValueError(
-            "The model requires exactly "
-            "10 input features."
+            "The model requires exactly 10 input features."
         )
 
-
-    if not np.all(
-        np.isfinite(
-            input_data_reshaped
-        )
-    ):
+    # Check for invalid values
+    if not np.all(np.isfinite(input_data)):
 
         raise ValueError(
-            "Invalid numeric input detected."
+            "The patient information contains invalid numeric values."
         )
 
-
+    # Scale using the same scaler used during training
     scaled_input = scaler.transform(
-        input_data_reshaped
+        input_data
     )
 
-
+    # Prediction
     prediction = model.predict(
         scaled_input
     )[0]
 
+    return int(prediction)
 
-    prediction = int(
-        prediction
+
+# ==========================================
+# SIDEBAR
+# ==========================================
+
+with st.sidebar:
+
+    st.title("🧠 StrokeDetect")
+
+    st.caption(
+        "Machine Learning Stroke Prediction System"
     )
 
+    st.divider()
 
-    return prediction
+    selection = option_menu(
+
+        menu_title=None,
+
+        options=[
+            "Single Prediction",
+            "Multi Prediction"
+        ],
+
+        icons=[
+            "person",
+            "file-earmark-spreadsheet"
+        ],
+
+        default_index=0
+    )
+
+    st.divider()
+
+    st.caption(
+        "Prediction results are generated "
+        "by a machine-learning model."
+    )
 
 
 # ==========================================
@@ -560,70 +242,55 @@ def stroke_detect(given_data):
 
 def single_prediction_page():
 
+    # ======================================
     # HEADER
+    # ======================================
 
-    st.markdown(
-        """
-        <div class="main-header">
+    st.title("🧠 Stroke Prediction System")
 
-            <h1>
-                🧠 Stroke Prediction System
-            </h1>
-
-            <p>
-                Enter the patient's health information
-                to generate a machine-learning prediction.
-            </p>
-
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.caption(
+        "Enter the patient's demographic and clinical "
+        "information to generate a stroke prediction."
     )
 
-
-    st.markdown(
-        """
-        <div class="info-box">
-
-            <strong>Patient Assessment</strong><br>
-
-            Complete all fields below.
-            Categorical fields must be selected
-            before a prediction can be generated.
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.divider()
 
 
-    st.markdown(
-        '<div class="section-title">Patient Information</div>',
-        unsafe_allow_html=True
-    )
+    # ======================================
+    # INFORMATION
+    # ======================================
 
-
-    st.markdown(
-        """
-        <div class="section-description">
-            Provide the patient's demographic and
-            clinical information.
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.info(
+        "Complete all patient information below. "
+        "All fields are required before a prediction "
+        "can be generated.",
+        icon="ℹ️"
     )
 
 
     # ======================================
-    # FORM
+    # PATIENT FORM
     # ======================================
+
+    st.subheader("Patient Information")
+
+    st.caption(
+        "Provide the patient's information in the fields below."
+    )
+
 
     with st.form(
         "stroke_prediction_form"
     ):
 
 
-        # ROW 1
+        # ==================================
+        # SECTION 1
+        # DEMOGRAPHIC INFORMATION
+        # ==================================
+
+        st.markdown("#### Demographic Information")
+
 
         col1, col2 = st.columns(2)
 
@@ -652,39 +319,6 @@ def single_prediction_page():
                 placeholder="Choose an option"
             )
 
-
-        # ROW 2
-
-        col1, col2 = st.columns(2)
-
-
-        with col1:
-
-            option4 = st.selectbox(
-                "Hypertension",
-                (
-                    "Hypertensive",
-                    "Not hypertensive"
-                ),
-                index=None,
-                placeholder="Choose an option"
-            )
-
-
-        with col2:
-
-            option5 = st.selectbox(
-                "Heart Disease",
-                (
-                    "Has heart disease",
-                    "No heart disease"
-                ),
-                index=None,
-                placeholder="Choose an option"
-            )
-
-
-        # ROW 3
 
         col1, col2 = st.columns(2)
 
@@ -718,8 +352,6 @@ def single_prediction_page():
             )
 
 
-        # ROW 4
-
         col1, col2 = st.columns(2)
 
 
@@ -751,7 +383,45 @@ def single_prediction_page():
             )
 
 
-        # ROW 5
+        st.divider()
+
+
+        # ==================================
+        # SECTION 2
+        # MEDICAL INFORMATION
+        # ==================================
+
+        st.markdown("#### Medical Information")
+
+
+        col1, col2 = st.columns(2)
+
+
+        with col1:
+
+            option4 = st.selectbox(
+                "Hypertension",
+                (
+                    "Hypertensive",
+                    "Not hypertensive"
+                ),
+                index=None,
+                placeholder="Choose an option"
+            )
+
+
+        with col2:
+
+            option5 = st.selectbox(
+                "Heart Disease",
+                (
+                    "Has heart disease",
+                    "No heart disease"
+                ),
+                index=None,
+                placeholder="Choose an option"
+            )
+
 
         col1, col2 = st.columns(2)
 
@@ -781,10 +451,10 @@ def single_prediction_page():
         st.write("")
 
 
-        submitted = (
-            st.form_submit_button(
-                "Generate Prediction"
-            )
+        submitted = st.form_submit_button(
+            "Generate Prediction",
+            type="primary",
+            use_container_width=True
         )
 
 
@@ -794,60 +464,50 @@ def single_prediction_page():
 
     if submitted:
 
-
         fields = {
 
-            "Patient Age":
-                age,
+            "Patient Age": age,
 
-            "Sex":
-                option1,
+            "Sex": option1,
 
-            "Hypertension":
-                option4,
+            "Hypertension": option4,
 
-            "Heart Disease":
-                option5,
+            "Heart Disease": option5,
 
-            "Ever Married":
-                marriage,
+            "Ever Married": marriage,
 
-            "Work Type":
-                option6,
+            "Work Type": option6,
 
-            "Residence Type":
-                option7,
+            "Residence Type": option7,
 
-            "Average Glucose Level":
-                glucose,
+            "Average Glucose Level": glucose,
 
-            "BMI":
-                bmi,
+            "BMI": bmi,
 
-            "Smoking Status":
-                smoking_status
+            "Smoking Status": smoking_status
         }
 
 
         missing_fields = [
 
-            name
+            field
 
-            for name, value
-            in fields.items()
+            for field, value in fields.items()
 
             if value is None
-
         ]
 
+
+        # ==================================
+        # MISSING FIELD VALIDATION
+        # ==================================
 
         if missing_fields:
 
             st.error(
                 "Please complete the following field(s): "
-                + ", ".join(
-                    missing_fields
-                )
+                + ", ".join(missing_fields),
+                icon="⚠️"
             )
 
             return
@@ -863,8 +523,7 @@ def single_prediction_page():
         if glucose <= 0:
 
             validation_errors.append(
-                "Average glucose level "
-                "must be greater than 0."
+                "Average glucose level must be greater than 0."
             )
 
 
@@ -880,45 +539,40 @@ def single_prediction_page():
             for error in validation_errors:
 
                 st.error(
-                    error
+                    error,
+                    icon="⚠️"
                 )
 
             return
 
 
         # ==================================
-        # ENCODE CATEGORIES
+        # ENCODE CATEGORICAL VARIABLES
         # ==================================
 
         sex = SEX_MAP[
             option1
         ]
 
-
         hyperten = HYPERTENSION_MAP[
             option4
         ]
-
 
         heartDis = HEART_DISEASE_MAP[
             option5
         ]
 
-
         married = MARRIED_MAP[
             marriage
         ]
-
 
         work_type = WORK_TYPE_MAP[
             option6
         ]
 
-
         resident = RESIDENCE_MAP[
             option7
         ]
-
 
         smoking_stat = SMOKING_MAP[
             smoking_status
@@ -926,35 +580,27 @@ def single_prediction_page():
 
 
         # ==================================
-        # MODEL INPUT
+        # BUILD MODEL INPUT
         # ==================================
 
         patient_data = [
 
             sex,
-
             age,
-
             hyperten,
-
             heartDis,
-
             married,
-
             work_type,
-
             resident,
-
             glucose,
-
             bmi,
-
             smoking_stat
+
         ]
 
 
         # ==================================
-        # PREDICTION
+        # MAKE PREDICTION
         # ==================================
 
         try:
@@ -964,73 +610,53 @@ def single_prediction_page():
             )
 
 
+            st.divider()
+
+            st.subheader(
+                "Prediction Result"
+            )
+
+
             if prediction == 1:
 
-                st.markdown(
-                    """
-                    <div class="result-positive">
+                st.error(
+                    "Stroke Risk Detected",
+                    icon="⚠️"
+                )
 
-                        <h3>
-                            ⚠ Stroke Risk Detected
-                        </h3>
-
-                        <p>
-                            The machine-learning model
-                            classified this patient's
-                            input as indicating stroke risk.
-                        </p>
-
-                    </div>
-                    """,
-                    unsafe_allow_html=True
+                st.write(
+                    "The machine-learning model classified "
+                    "the patient's information as indicating "
+                    "stroke risk."
                 )
 
 
             else:
 
-                st.markdown(
-                    """
-                    <div class="result-negative">
+                st.success(
+                    "No Stroke Risk Detected",
+                    icon="✅"
+                )
 
-                        <h3>
-                            ✓ No Stroke Risk Detected
-                        </h3>
-
-                        <p>
-                            The machine-learning model
-                            classified this patient's
-                            input as not indicating
-                            stroke risk.
-                        </p>
-
-                    </div>
-                    """,
-                    unsafe_allow_html=True
+                st.write(
+                    "The machine-learning model classified "
+                    "the patient's information as not "
+                    "indicating stroke risk."
                 )
 
 
-            st.markdown(
-                """
-                <div class="disclaimer">
-
-                    <strong>Medical Disclaimer:</strong>
-
-                    This prediction is generated by
-                    a machine-learning model and
-                    should not be considered a
-                    medical diagnosis.
-
-                </div>
-                """,
-                unsafe_allow_html=True
+            st.warning(
+                "This result is generated by a machine-learning "
+                "model and should not be considered a medical diagnosis.",
+                icon="⚕️"
             )
 
 
         except Exception as error:
 
             st.error(
-                "The prediction could not "
-                "be completed."
+                "The prediction could not be completed.",
+                icon="❌"
             )
 
             st.exception(
@@ -1039,18 +665,20 @@ def single_prediction_page():
 
 
 # ==========================================
-# MULTI PREDICTION
+# MULTI PREDICTION FUNCTION
 # ==========================================
 
 def multi_prediction(
     uploaded_file
 ):
 
-
     model = load_model()
-
     scaler = load_scaler()
 
+
+    # ======================================
+    # READ DATA
+    # ======================================
 
     try:
 
@@ -1058,18 +686,19 @@ def multi_prediction(
             uploaded_file
         )
 
-
-    except Exception:
+    except Exception as error:
 
         st.error(
-            "The uploaded file could "
-            "not be read."
+            "The uploaded CSV file could not be read.",
+            icon="❌"
         )
 
         return
 
 
-    # Remove target
+    # ======================================
+    # REMOVE STROKE COLUMN
+    # ======================================
 
     if "stroke" in dfinput.columns:
 
@@ -1080,7 +709,9 @@ def multi_prediction(
         )
 
 
-    # Remove ID
+    # ======================================
+    # REMOVE ID COLUMN
+    # ======================================
 
     if "id" in dfinput.columns:
 
@@ -1097,15 +728,32 @@ def multi_prediction(
     )
 
 
-    st.markdown(
-        '<div class="section-title">Uploaded Patient Data</div>',
-        unsafe_allow_html=True
+    # ======================================
+    # DATASET SUMMARY
+    # ======================================
+
+    st.subheader(
+        "Uploaded Patient Data"
     )
 
 
-    st.write(
-        f"{len(dfinput)} patient record(s) detected."
-    )
+    col1, col2 = st.columns(2)
+
+
+    with col1:
+
+        st.metric(
+            "Patient Records",
+            len(dfinput)
+        )
+
+
+    with col2:
+
+        st.metric(
+            "Features",
+            len(dfinput.columns)
+        )
 
 
     st.dataframe(
@@ -1115,18 +763,15 @@ def multi_prediction(
 
 
     # ======================================
-    # COLUMN VALIDATION
+    # VALIDATE COLUMN ORDER
     # ======================================
 
-    if (
-        list(dfinput.columns)
-        != FEATURE_COLUMNS
-    ):
+    if list(dfinput.columns) != FEATURE_COLUMNS:
 
         st.error(
-            "The uploaded dataset columns "
-            "do not match the features "
-            "required by the model."
+            "The uploaded dataset does not contain "
+            "the required columns in the correct order.",
+            icon="❌"
         )
 
 
@@ -1135,17 +780,21 @@ def multi_prediction(
         )
 
 
-        st.code(
-            ", ".join(
-                FEATURE_COLUMNS
+        for number, column in enumerate(
+            FEATURE_COLUMNS,
+            start=1
+        ):
+
+            st.write(
+                f"{number}. {column}"
             )
-        )
+
 
         return
 
 
     # ======================================
-    # MISSING VALUES
+    # CHECK MISSING VALUES
     # ======================================
 
     if dfinput.isnull().any().any():
@@ -1154,40 +803,56 @@ def multi_prediction(
 
             dfinput.columns[
                 dfinput.isnull().any()
-            ]
+            ].tolist()
 
-            .tolist()
         )
 
 
         st.error(
-            "Missing values detected in: "
-            + ", ".join(
-                missing_columns
-            )
+            "Missing values were detected in: "
+            + ", ".join(missing_columns),
+            icon="⚠️"
         )
 
         return
 
 
     # ======================================
-    # NUMERIC CONVERSION
+    # CONVERT TO NUMERIC
     # ======================================
 
     try:
 
-        numeric_data = (
-            dfinput.astype(
-                float
-            )
+        numeric_data = dfinput.astype(
+            float
         )
 
 
     except ValueError:
 
         st.error(
-            "The uploaded CSV must contain "
-            "encoded numeric values."
+            "The uploaded file contains values "
+            "that cannot be converted to numbers.",
+            icon="❌"
+        )
+
+        return
+
+
+    # ======================================
+    # INVALID NUMBERS
+    # ======================================
+
+    if not np.all(
+        np.isfinite(
+            numeric_data.values
+        )
+    ):
+
+        st.error(
+            "The uploaded dataset contains invalid "
+            "numeric values.",
+            icon="❌"
         )
 
         return
@@ -1197,9 +862,22 @@ def multi_prediction(
     # SCALE DATA
     # ======================================
 
-    scaled_data = scaler.transform(
-        numeric_data.values
-    )
+    try:
+
+        scaled_data = scaler.transform(
+            numeric_data.values
+        )
+
+
+    except Exception as error:
+
+        st.error(
+            "The dataset could not be processed "
+            "using the model scaler.",
+            icon="❌"
+        )
+
+        return
 
 
     # ======================================
@@ -1207,70 +885,164 @@ def multi_prediction(
     # ======================================
 
     if st.button(
-        "Generate Predictions"
+        "Generate Predictions",
+        type="primary",
+        use_container_width=True
     ):
 
 
-        prediction = model.predict(
-            scaled_data
-        )
+        try:
+
+            prediction = model.predict(
+                scaled_data
+            )
 
 
-        prediction = np.asarray(
-            prediction
-        ).reshape(-1)
+            prediction = np.asarray(
+                prediction
+            ).reshape(-1)
 
 
-        labels = []
+            prediction_labels = []
 
 
-        for result in prediction:
+            for result in prediction:
 
-            if int(result) == 1:
+                if int(result) == 1:
 
-                labels.append(
-                    "Stroke risk detected"
+                    prediction_labels.append(
+                        "Stroke risk detected"
+                    )
+
+                else:
+
+                    prediction_labels.append(
+                        "No stroke risk detected"
+                    )
+
+
+            # ==================================
+            # RESULTS
+            # ==================================
+
+            result_dataframe = pd.DataFrame({
+
+                "Patient ID":
+                    np.arange(
+                        1,
+                        len(
+                            prediction_labels
+                        ) + 1
+                    ),
+
+                "Prediction":
+                    prediction_labels
+
+            })
+
+
+            st.divider()
+
+            st.subheader(
+                "Prediction Results"
+            )
+
+
+            # ==================================
+            # SUMMARY
+            # ==================================
+
+            stroke_count = (
+                result_dataframe[
+                    "Prediction"
+                ]
+                ==
+                "Stroke risk detected"
+            ).sum()
+
+
+            no_stroke_count = (
+                len(result_dataframe)
+                -
+                stroke_count
+            )
+
+
+            col1, col2, col3 = st.columns(3)
+
+
+            with col1:
+
+                st.metric(
+                    "Total Patients",
+                    len(result_dataframe)
                 )
 
-            else:
 
-                labels.append(
-                    "No stroke risk detected"
+            with col2:
+
+                st.metric(
+                    "Stroke Risk",
+                    stroke_count
                 )
 
 
-        result_dataframe = pd.DataFrame({
+            with col3:
 
-            "Patient ID":
-                np.arange(
-                    1,
-                    len(labels) + 1
-                ),
-
-            "Prediction":
-                labels
-
-        })
+                st.metric(
+                    "No Stroke Risk",
+                    no_stroke_count
+                )
 
 
-        st.markdown(
-            '<div class="section-title">Prediction Results</div>',
-            unsafe_allow_html=True
-        )
+            st.dataframe(
+                result_dataframe,
+                use_container_width=True
+            )
 
 
-        st.dataframe(
-            result_dataframe,
-            use_container_width=True
-        )
+            # ==================================
+            # DOWNLOAD
+            # ==================================
+
+            csv = result_dataframe.to_csv(
+                index=False
+            ).encode(
+                "utf-8"
+            )
 
 
-        st.markdown(
-            filedownload(
-                result_dataframe
-            ),
-            unsafe_allow_html=True
-        )
+            st.download_button(
+
+                label="Download Prediction Results",
+
+                data=csv,
+
+                file_name="stroke_predictions.csv",
+
+                mime="text/csv",
+
+                use_container_width=True
+            )
+
+
+            st.warning(
+                "These results are generated by a machine-learning "
+                "model and should not be considered medical diagnoses.",
+                icon="⚕️"
+            )
+
+
+        except Exception as error:
+
+            st.error(
+                "The predictions could not be completed.",
+                icon="❌"
+            )
+
+            st.exception(
+                error
+            )
 
 
 # ==========================================
@@ -1279,49 +1051,38 @@ def multi_prediction(
 
 def multi_prediction_page():
 
-
-    st.markdown(
-        """
-        <div class="main-header">
-
-            <h1>
-                📊 Multiple Patient Prediction
-            </h1>
-
-            <p>
-                Upload a CSV dataset to generate
-                stroke predictions for multiple
-                patients simultaneously.
-            </p>
-
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.title(
+        "📊 Multiple Patient Prediction"
     )
 
-
-    st.markdown(
-        '<div class="section-title">Upload Dataset</div>',
-        unsafe_allow_html=True
+    st.caption(
+        "Upload patient data and generate predictions "
+        "for multiple patients at once."
     )
 
+    st.divider()
 
-    st.markdown(
-        """
-        <div class="section-description">
-            Your CSV file must contain the ten
-            input features required by the model.
-        </div>
-        """,
-        unsafe_allow_html=True
+
+    st.info(
+        "Upload a CSV file containing the 10 features "
+        "required by the stroke prediction model.",
+        icon="ℹ️"
     )
 
 
     uploaded_file = st.file_uploader(
-        "Upload CSV file",
+
+        "Patient Dataset",
+
         type=[
             "csv"
-        ]
+        ],
+
+        help=(
+            "Upload a CSV file containing patient "
+            "information."
+        )
+
     )
 
 
@@ -1334,8 +1095,14 @@ def multi_prediction_page():
 
     else:
 
-        st.info(
-            "Select a CSV file to begin "
+        st.write("")
+
+        st.subheader(
+            "No dataset uploaded"
+        )
+
+        st.caption(
+            "Choose a CSV file above to start "
             "multiple-patient prediction."
         )
 
