@@ -32,7 +32,6 @@ SCALER_FILE = "my_standard_scaler.pkl"
 
 # ==========================================
 # FEATURE ORDER
-# MUST MATCH MODEL TRAINING
 # ==========================================
 
 FEATURE_COLUMNS = [
@@ -58,24 +57,20 @@ SEX_MAP = {
     "Female": 0
 }
 
-
 HYPERTENSION_MAP = {
     "Hypertensive": 1,
     "Not hypertensive": 0
 }
-
 
 HEART_DISEASE_MAP = {
     "Has heart disease": 1,
     "No heart disease": 0
 }
 
-
 MARRIED_MAP = {
     "Yes": 1,
     "No": 0
 }
-
 
 WORK_TYPE_MAP = {
     "Govt_job": 0,
@@ -85,12 +80,10 @@ WORK_TYPE_MAP = {
     "children": 4
 }
 
-
 RESIDENCE_MAP = {
     "Rural": 0,
     "Urban": 1
 }
-
 
 SMOKING_MAP = {
     "never smoked": 0,
@@ -106,7 +99,6 @@ SMOKING_MAP = {
 
 @st.cache_resource
 def load_model():
-
     with open(MODEL_FILE, "rb") as file:
         model = pk.load(file)
 
@@ -114,12 +106,11 @@ def load_model():
 
 
 # ==========================================
-# LOAD STANDARD SCALER
+# LOAD SCALER
 # ==========================================
 
 @st.cache_resource
 def load_scaler():
-
     with open(SCALER_FILE, "rb") as file:
         scaler = pk.load(file)
 
@@ -127,12 +118,11 @@ def load_scaler():
 
 
 # ==========================================
-# CLEAR SINGLE PREDICTION RESULT
-# WHEN ANY FIELD CHANGES
+# CLEAR OLD PREDICTION
+# WHEN AN INPUT CHANGES
 # ==========================================
 
 def clear_prediction():
-
     st.session_state.prediction_result = None
 
 
@@ -141,20 +131,17 @@ def clear_prediction():
 # ==========================================
 
 if "prediction_result" not in st.session_state:
-
     st.session_state.prediction_result = None
 
 
 # ==========================================
 # SIDEBAR
-# ONLY NAVIGATION
 # ==========================================
 
 with st.sidebar:
 
     selection = option_menu(
-
-        menu_title=None,
+        menu_title="Main Menu",
 
         options=[
             "Single Prediction",
@@ -166,7 +153,7 @@ with st.sidebar:
             "file-earmark-spreadsheet"
         ],
 
-        menu_icon=None,
+        menu_icon="house",
 
         default_index=0
     )
@@ -181,20 +168,17 @@ def stroke_detect(given_data):
     model = load_model()
     scaler = load_scaler()
 
-
-    # Convert input to NumPy array
+    # Convert input into NumPy array
     input_data = np.asarray(
         given_data,
         dtype=float
     )
 
-
-    # Reshape for one patient
+    # Reshape for a single patient
     input_data = input_data.reshape(
         1,
         -1
     )
-
 
     # Validate number of features
     if input_data.shape[1] != 10:
@@ -203,8 +187,7 @@ def stroke_detect(given_data):
             "The model requires exactly 10 input features."
         )
 
-
-    # Check for NaN and infinite values
+    # Validate numeric values
     if not np.all(
         np.isfinite(input_data)
     ):
@@ -213,24 +196,20 @@ def stroke_detect(given_data):
             "The patient data contains an invalid numeric value."
         )
 
-
-    # Apply scaler used during training
+    # Scale the patient information
     scaled_input = scaler.transform(
         input_data
     )
-
 
     # Make prediction
     prediction = model.predict(
         scaled_input
     )
 
-
-    # Convert prediction to one value
+    # Extract prediction
     prediction = np.asarray(
         prediction
     ).reshape(-1)[0]
-
 
     return int(prediction)
 
@@ -245,11 +224,9 @@ def single_prediction_page():
         "🧠 Stroke Prediction System"
     )
 
-
     st.subheader(
         "Patient Information"
     )
-
 
     st.caption(
         "Provide the patient's information in the fields below."
@@ -257,36 +234,22 @@ def single_prediction_page():
 
 
     # ======================================
-    # DEMOGRAPHIC INFORMATION
+    # ROW 1
     # ======================================
 
-    st.markdown(
-        "#### Demographic Information"
-    )
-
-
-    # ROW 1
     col1, col2 = st.columns(2)
 
 
     with col1:
 
         age = st.number_input(
-
             "Patient Age",
-
             min_value=0,
-
             max_value=120,
-
             value=None,
-
             step=1,
-
             placeholder="Enter age",
-
             key="patient_age",
-
             on_change=clear_prediction
         )
 
@@ -294,154 +257,36 @@ def single_prediction_page():
     with col2:
 
         sex_option = st.selectbox(
-
             "Sex",
-
             (
                 "Male",
                 "Female"
             ),
-
             index=None,
-
             placeholder="Choose an option",
-
             key="patient_sex",
-
             on_change=clear_prediction
         )
 
 
+    # ======================================
     # ROW 2
-    col1, col2 = st.columns(2)
-
-
-    with col1:
-
-        marriage_option = st.selectbox(
-
-            "Ever Married?",
-
-            (
-                "Yes",
-                "No"
-            ),
-
-            index=None,
-
-            placeholder="Choose an option",
-
-            key="patient_marriage",
-
-            on_change=clear_prediction
-        )
-
-
-    with col2:
-
-        work_option = st.selectbox(
-
-            "Work Type",
-
-            (
-                "children",
-                "Govt_job",
-                "Never_worked",
-                "Private",
-                "Self-employed"
-            ),
-
-            index=None,
-
-            placeholder="Choose an option",
-
-            key="patient_work_type",
-
-            on_change=clear_prediction
-        )
-
-
-    # ROW 3
-    col1, col2 = st.columns(2)
-
-
-    with col1:
-
-        residence_option = st.selectbox(
-
-            "Residence Type",
-
-            (
-                "Rural",
-                "Urban"
-            ),
-
-            index=None,
-
-            placeholder="Choose an option",
-
-            key="patient_residence",
-
-            on_change=clear_prediction
-        )
-
-
-    with col2:
-
-        smoking_option = st.selectbox(
-
-            "Smoking Status",
-
-            (
-                "never smoked",
-                "formerly smoked",
-                "smokes",
-                "Unknown"
-            ),
-
-            index=None,
-
-            placeholder="Choose an option",
-
-            key="patient_smoking",
-
-            on_change=clear_prediction
-        )
-
-
-    st.divider()
-
-
-    # ======================================
-    # MEDICAL INFORMATION
     # ======================================
 
-    st.markdown(
-        "#### Medical Information"
-    )
-
-
-    # ROW 4
     col1, col2 = st.columns(2)
 
 
     with col1:
 
         hypertension_option = st.selectbox(
-
             "Hypertension",
-
             (
                 "Hypertensive",
                 "Not hypertensive"
             ),
-
             index=None,
-
             placeholder="Choose an option",
-
             key="patient_hypertension",
-
             on_change=clear_prediction
         )
 
@@ -449,44 +294,113 @@ def single_prediction_page():
     with col2:
 
         heart_disease_option = st.selectbox(
-
             "Heart Disease",
-
             (
                 "Has heart disease",
                 "No heart disease"
             ),
-
             index=None,
-
             placeholder="Choose an option",
-
             key="patient_heart_disease",
-
             on_change=clear_prediction
         )
 
 
+    # ======================================
+    # ROW 3
+    # ======================================
+
+    col1, col2 = st.columns(2)
+
+
+    with col1:
+
+        marriage_option = st.selectbox(
+            "Ever Married?",
+            (
+                "Yes",
+                "No"
+            ),
+            index=None,
+            placeholder="Choose an option",
+            key="patient_marriage",
+            on_change=clear_prediction
+        )
+
+
+    with col2:
+
+        work_option = st.selectbox(
+            "Work Type",
+            (
+                "children",
+                "Govt_job",
+                "Never_worked",
+                "Private",
+                "Self-employed"
+            ),
+            index=None,
+            placeholder="Choose an option",
+            key="patient_work_type",
+            on_change=clear_prediction
+        )
+
+
+    # ======================================
+    # ROW 4
+    # ======================================
+
+    col1, col2 = st.columns(2)
+
+
+    with col1:
+
+        residence_option = st.selectbox(
+            "Residence Type",
+            (
+                "Rural",
+                "Urban"
+            ),
+            index=None,
+            placeholder="Choose an option",
+            key="patient_residence",
+            on_change=clear_prediction
+        )
+
+
+    with col2:
+
+        smoking_option = st.selectbox(
+            "Smoking Status",
+            (
+                "never smoked",
+                "formerly smoked",
+                "smokes",
+                "Unknown"
+            ),
+            index=None,
+            placeholder="Choose an option",
+            key="patient_smoking",
+            on_change=clear_prediction
+        )
+
+
+    # ======================================
     # ROW 5
+    # ======================================
+
     col1, col2 = st.columns(2)
 
 
     with col1:
 
         glucose = st.number_input(
-
             "Average Glucose Level",
-
             min_value=0.0,
-
             value=None,
-
             step=0.01,
-
             placeholder="Enter glucose level",
-
             key="patient_glucose",
-
             on_change=clear_prediction
         )
 
@@ -494,19 +408,12 @@ def single_prediction_page():
     with col2:
 
         bmi = st.number_input(
-
             "Body Mass Index (BMI)",
-
             min_value=0.0,
-
             value=None,
-
             step=0.01,
-
             placeholder="Enter BMI",
-
             key="patient_bmi",
-
             on_change=clear_prediction
         )
 
@@ -515,73 +422,54 @@ def single_prediction_page():
 
 
     # ======================================
-    # PREDICTION BUTTON
+    # GENERATE PREDICTION BUTTON
     # ======================================
 
     predict_button = st.button(
-
         "Generate Prediction",
-
         type="primary",
-
         use_container_width=True
     )
 
 
     # ======================================
-    # WHEN USER CLICKS PREDICT
+    # VALIDATION AND PREDICTION
     # ======================================
 
     if predict_button:
 
-
-        # ==================================
-        # REQUIRED FIELD VALIDATION
-        # ==================================
-
         fields = {
 
-            "Patient Age":
-                age,
+            "Patient Age": age,
 
-            "Sex":
-                sex_option,
+            "Sex": sex_option,
 
-            "Ever Married":
-                marriage_option,
+            "Hypertension": hypertension_option,
 
-            "Work Type":
-                work_option,
+            "Heart Disease": heart_disease_option,
 
-            "Residence Type":
-                residence_option,
+            "Ever Married": marriage_option,
 
-            "Smoking Status":
-                smoking_option,
+            "Work Type": work_option,
 
-            "Hypertension":
-                hypertension_option,
+            "Residence Type": residence_option,
 
-            "Heart Disease":
-                heart_disease_option,
+            "Average Glucose Level": glucose,
 
-            "Average Glucose Level":
-                glucose,
+            "BMI": bmi,
 
-            "BMI":
-                bmi
+            "Smoking Status": smoking_option
         }
 
 
+        # ----------------------------------
+        # REQUIRED FIELD VALIDATION
+        # ----------------------------------
+
         missing_fields = [
-
             field_name
-
-            for field_name, value
-            in fields.items()
-
+            for field_name, value in fields.items()
             if value is None
-
         ]
 
 
@@ -590,30 +478,19 @@ def single_prediction_page():
             st.session_state.prediction_result = None
 
             st.error(
-
                 "Please complete the following field(s): "
-                + ", ".join(
-                    missing_fields
-                ),
-
+                + ", ".join(missing_fields),
                 icon="⚠️"
             )
 
             return
 
 
-        # ==================================
+        # ----------------------------------
         # NUMERIC VALIDATION
-        # ==================================
+        # ----------------------------------
 
         validation_errors = []
-
-
-        if age < 0 or age > 120:
-
-            validation_errors.append(
-                "Patient age must be between 0 and 120 years."
-            )
 
 
         if glucose <= 0:
@@ -634,7 +511,6 @@ def single_prediction_page():
 
             st.session_state.prediction_result = None
 
-
             for error in validation_errors:
 
                 st.error(
@@ -642,13 +518,12 @@ def single_prediction_page():
                     icon="⚠️"
                 )
 
-
             return
 
 
-        # ==================================
+        # ----------------------------------
         # ENCODE CATEGORICAL VALUES
-        # ==================================
+        # ----------------------------------
 
         sex = SEX_MAP[
             sex_option
@@ -685,12 +560,11 @@ def single_prediction_page():
         ]
 
 
-        # ==================================
-        # BUILD PATIENT DATA
-        # ==================================
+        # ----------------------------------
+        # CREATE MODEL INPUT
+        # ----------------------------------
 
         patient_data = [
-
             sex,
             age,
             hypertension,
@@ -701,13 +575,12 @@ def single_prediction_page():
             glucose,
             bmi,
             smoking_status
-
         ]
 
 
-        # ==================================
+        # ----------------------------------
         # MAKE PREDICTION
-        # ==================================
+        # ----------------------------------
 
         try:
 
@@ -715,8 +588,6 @@ def single_prediction_page():
                 patient_data
             )
 
-
-            # Save prediction
             st.session_state.prediction_result = prediction
 
 
@@ -724,17 +595,14 @@ def single_prediction_page():
 
             st.session_state.prediction_result = None
 
-
             st.error(
                 "The prediction could not be completed.",
                 icon="❌"
             )
 
-
             st.exception(
                 error
             )
-
 
             return
 
@@ -748,10 +616,6 @@ def single_prediction_page():
         is not None
     ):
 
-
-        st.divider()
-
-
         st.subheader(
             "Prediction Result"
         )
@@ -761,7 +625,6 @@ def single_prediction_page():
             st.session_state.prediction_result
             == 1
         ):
-
 
             st.error(
                 "Stroke Risk Detected",
@@ -778,7 +641,6 @@ def single_prediction_page():
 
         else:
 
-
             st.success(
                 "No Stroke Risk Detected",
                 icon="✅"
@@ -793,10 +655,8 @@ def single_prediction_page():
 
 
         st.warning(
-
             "This result is generated by a machine-learning "
             "model and should not be considered a medical diagnosis.",
-
             icon="⚕️"
         )
 
@@ -805,16 +665,14 @@ def single_prediction_page():
 # MULTI PREDICTION FUNCTION
 # ==========================================
 
-def multi_prediction(
-    uploaded_file
-):
+def multi_prediction(uploaded_file):
 
     model = load_model()
     scaler = load_scaler()
 
 
     # ======================================
-    # READ CSV
+    # READ CSV FILE
     # ======================================
 
     try:
@@ -824,7 +682,7 @@ def multi_prediction(
         )
 
 
-    except Exception as error:
+    except Exception:
 
         st.error(
             "The uploaded CSV file could not be read.",
@@ -835,7 +693,7 @@ def multi_prediction(
 
 
     # ======================================
-    # REMOVE STROKE COLUMN IF PRESENT
+    # REMOVE TARGET COLUMN
     # ======================================
 
     if "stroke" in dfinput.columns:
@@ -848,7 +706,7 @@ def multi_prediction(
 
 
     # ======================================
-    # REMOVE ID COLUMN IF PRESENT
+    # REMOVE ID COLUMN
     # ======================================
 
     if "id" in dfinput.columns:
@@ -867,7 +725,7 @@ def multi_prediction(
 
 
     # ======================================
-    # DISPLAY DATA
+    # DISPLAY UPLOADED DATA
     # ======================================
 
     st.subheader(
@@ -901,14 +759,13 @@ def multi_prediction(
 
 
     # ======================================
-    # VALIDATE COLUMNS
+    # VALIDATE COLUMN ORDER
     # ======================================
 
     if (
         list(dfinput.columns)
         != FEATURE_COLUMNS
     ):
-
 
         st.error(
             "The uploaded dataset does not contain "
@@ -927,7 +784,6 @@ def multi_prediction(
             start=1
         ):
 
-
             st.write(
                 f"{number}. {column}"
             )
@@ -942,23 +798,16 @@ def multi_prediction(
 
     if dfinput.isnull().any().any():
 
-
         missing_columns = (
-
             dfinput.columns[
                 dfinput.isnull().any()
             ].tolist()
-
         )
 
 
         st.error(
-
             "Missing values were detected in: "
-            + ", ".join(
-                missing_columns
-            ),
-
+            + ", ".join(missing_columns),
             icon="⚠️"
         )
 
@@ -967,7 +816,7 @@ def multi_prediction(
 
 
     # ======================================
-    # CONVERT DATA TO NUMERIC
+    # CONVERT TO NUMERIC DATA
     # ======================================
 
     try:
@@ -979,13 +828,11 @@ def multi_prediction(
 
     except ValueError:
 
-
         st.error(
             "The uploaded file contains values "
             "that cannot be converted to numbers.",
             icon="❌"
         )
-
 
         return
 
@@ -1000,12 +847,10 @@ def multi_prediction(
         )
     ):
 
-
         st.error(
             "The uploaded dataset contains invalid numeric values.",
             icon="❌"
         )
-
 
         return
 
@@ -1021,8 +866,7 @@ def multi_prediction(
         )
 
 
-    except Exception as error:
-
+    except Exception:
 
         st.error(
             "The dataset could not be processed "
@@ -1030,27 +874,20 @@ def multi_prediction(
             icon="❌"
         )
 
-
         return
 
 
     # ======================================
-    # MULTI PREDICTION BUTTON
+    # GENERATE MULTIPLE PREDICTIONS
     # ======================================
 
     if st.button(
-
         "Generate Predictions",
-
         type="primary",
-
         use_container_width=True
-
     ):
 
-
         try:
-
 
             prediction = model.predict(
                 scaled_data
@@ -1067,17 +904,13 @@ def multi_prediction(
 
             for result in prediction:
 
-
                 if int(result) == 1:
-
 
                     prediction_labels.append(
                         "Stroke risk detected"
                     )
 
-
                 else:
-
 
                     prediction_labels.append(
                         "No stroke risk detected"
@@ -1098,16 +931,12 @@ def multi_prediction(
 
                 "Prediction":
                     prediction_labels
-
             })
 
 
             # ==================================
-            # RESULT SUMMARY
+            # DISPLAY RESULTS
             # ==================================
-
-            st.divider()
-
 
             st.subheader(
                 "Prediction Results"
@@ -1115,9 +944,7 @@ def multi_prediction(
 
 
             stroke_count = (
-                result_dataframe[
-                    "Prediction"
-                ]
+                result_dataframe["Prediction"]
                 ==
                 "Stroke risk detected"
             ).sum()
@@ -1157,10 +984,6 @@ def multi_prediction(
                 )
 
 
-            # ==================================
-            # DISPLAY RESULTS
-            # ==================================
-
             st.dataframe(
                 result_dataframe,
                 use_container_width=True
@@ -1179,36 +1002,27 @@ def multi_prediction(
 
 
             st.download_button(
-
                 label="Download Prediction Results",
-
                 data=csv,
-
                 file_name="stroke_predictions.csv",
-
                 mime="text/csv",
-
                 use_container_width=True
             )
 
 
             st.warning(
-
                 "These results are generated by a machine-learning "
                 "model and should not be considered medical diagnoses.",
-
                 icon="⚕️"
             )
 
 
         except Exception as error:
 
-
             st.error(
                 "The predictions could not be completed.",
                 icon="❌"
             )
-
 
             st.exception(
                 error
@@ -1221,24 +1035,18 @@ def multi_prediction(
 
 def multi_prediction_page():
 
-
     st.title(
         "📊 Multiple Patient Prediction"
     )
 
 
     uploaded_file = st.file_uploader(
-
         "Upload Patient Dataset",
-
-        type=["csv"],
-
-        help="Upload a CSV file containing patient information."
+        type=["csv"]
     )
 
 
     if uploaded_file is not None:
-
 
         multi_prediction(
             uploaded_file
